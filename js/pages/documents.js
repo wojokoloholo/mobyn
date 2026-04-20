@@ -120,6 +120,12 @@ function loadSettings() {
     } else {
       visibleCards = ["mdowod"]; // Default: tylko mDowód
     }
+    
+    // ZABEZPIECZENIE: Jeśli visibleCards jest puste, dodaj mDowód
+    if (visibleCards.length === 0) {
+      visibleCards = ["mdowod"];
+      saveSettings();
+    }
   } catch (e) {
     cardOrder = ["mdowod", "diia", "legszk", "legstu", "prawojazdy"];
     visibleCards = ["mdowod"];
@@ -204,6 +210,23 @@ function renderCards() {
 
     container.appendChild(card);
   });
+  
+  // Jeśli nadal brak kart (awaria) – dodaj mDowód ręcznie
+  if (cardsToRender.length === 0 && container.children.length === 0) {
+    const emergencyCard = document.createElement("a");
+    emergencyCard.className = "id-card";
+    emergencyCard.href = "dowod.html";
+    emergencyCard.style.top = "0px";
+    emergencyCard.style.zIndex = "1";
+    emergencyCard.innerHTML = `
+      <img src="assets/icons/mdowod_bg_big.webp" alt="mDowód" class="id-card-image" loading="eager" />
+      <div class="id-card-header">
+        <span class="id-card-title">mDowód</span>
+        <img src="assets/icons/logo_mdowod.svg" alt="Logo" class="id-card-logo" />
+      </div>
+    `;
+    container.appendChild(emergencyCard);
+  }
 }
 
 // Render sortable list in customize overlay
