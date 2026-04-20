@@ -1213,7 +1213,7 @@ footer {
       #4696ff,
       #9664ff);
   background-size: 100% 300%;
-  opacity: 0;
+  opacity: 1;
   background-position: center 50%;
   transition: opacity 0.15s ease, background-position 0.2s ease;
   -webkit-mask-image: url("../../assets/orzel/godlo%20back.png");
