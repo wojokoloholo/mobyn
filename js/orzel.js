@@ -1,92 +1,74 @@
-// Inicjalizacja hologramu
+// Prosta animacja hologramu - działa od razu, bez czujników
 (function () {
-  console.log("orzel.js loaded");
+  console.log("orzel.js loaded - SIMPLE AUTO ANIMATION");
 
   function initHologram() {
     const holos = document.querySelectorAll(".holo-back");
     const bases = document.querySelectorAll(".base-back");
     const tops = document.querySelectorAll(".godlo-top");
 
-    console.log(
-      "initHologram: found",
-      holos.length,
-      "holo-back,",
-      bases.length,
-      "base-back,",
-      tops.length,
-      "godlo-top"
-    );
+    console.log("Found:", holos.length, "holo-back");
 
     if (holos.length === 0) {
       console.warn("No .holo-back elements found!");
       return;
     }
 
-    // Wymuszenie załadowania obrazów tła
-    bases.forEach((base) => {
+    // Pokaż wszystkie warstwy
+    bases.forEach(base => {
       base.style.display = "block";
       base.style.opacity = "1";
     });
 
-    tops.forEach((top) => {
+    tops.forEach(top => {
       top.style.display = "block";
       top.style.opacity = "1";
     });
 
-    // Inicjalna widoczność hologramu w pozycji pionowej
-    holos.forEach((holo) => {
+    // Ustaw początkową widoczność hologramu
+    holos.forEach(holo => {
       holo.style.opacity = "0.7";
       holo.style.backgroundPosition = "center 50%";
     });
 
-    console.log("Hologram initialized successfully");
+    console.log("Hologram initialized - ready for animation");
   }
 
-  // Uruchom natychmiast - skrypt jest na końcu body
   initHologram();
 
-  // KLUCZOWE: Uruchom też przy każdym pokazaniu strony (nawigacja z cache)
-  window.addEventListener("pageshow", function (event) {
-    console.log("pageshow event fired, persisted:", event.persisted);
-    initHologram();
-  });
+  // AUTOMATYCZNA ANIMACJA - fala przechodzi w górę i w dół
+  let position = 0;
+  let direction = 1;
 
-  // Obsługa deviceorientation
-  function handleOrientation(e) {
-    if (e.beta === null) return;
-
-    const beta = e.beta;
+  function animate() {
     const holos = document.querySelectorAll(".holo-back");
+    if (holos.length === 0) return;
 
-    // Zawsze pokazuj gradient - zmienia się intensywność i pozycja
-    let t = Math.sin(((beta - 90) * Math.PI) / 180);
-    t = Math.abs(t);
-    t = Math.pow(t, 0.8); // bardziej wrażliwe na zmiany kąta
+    // Przesuwanie pozycji (0% do 100%)
+    position += direction * 1.5;
 
-    // Zwiększone minimum opacity dla zakresu 60-140
-    let minOpacity = 0.3;
-    if (beta >= 60 && beta <= 140) {
-      minOpacity = 0.7; // mocniejsze kolory w pozycji pionowej
+    if (position >= 100) {
+      position = 100;
+      direction = -1;
+    } else if (position <= 0) {
+      position = 0;
+      direction = 1;
     }
-    const opacity = Math.max(minOpacity, t);
 
-    const pos = 100 * t;
+    // Intensywność zmienia się wraz z ruchem
+    let opacity = 0.5 + (Math.sin(position * Math.PI / 100) * 0.4);
+    opacity = Math.min(0.9, Math.max(0.4, opacity));
 
-    // Zastosuj do wszystkich hologramów na stronie
-    holos.forEach((holo) => {
-      holo.style.backgroundPosition = `center ${pos}%`;
+    holos.forEach(holo => {
+      holo.style.backgroundPosition = center ${position}%;
       holo.style.opacity = opacity;
     });
+
+    requestAnimationFrame(animate);
   }
 
-  // Funkcja inicjalizująca czujniki ruchu - bez requestu, tylko attach listener
-  function enableMotionSensor() {
-    console.log(
-      "[Orzel] Attaching orientation listener (permission should be granted from login.html)"
-    );
-    window.addEventListener("deviceorientation", handleOrientation);
-  }
+  // Uruchom animację
+  animate();
 
-  // Automatycznie włącz czujniki przy załadowaniu strony
-  enableMotionSensor();
+  console.log("Auto animation started - hologram moves up and down");
 })();
